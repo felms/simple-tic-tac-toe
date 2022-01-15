@@ -36,15 +36,32 @@ public class Game {
         }
     }
 
-    public void updateGrid(int x, int y) {
+    // Retorna 'true' caso consiga atualizar o estado do grid
+    // e 'false' caso a operação não seja bem sucedida.
+    public boolean updateGrid(int x, int y) {
         int inputX = (x - 1) * 3;
         int intputY = y - 1;
         int pos = inputX + intputY;
+
+        if (x < 1 || x > 3 ||
+            y < 1 || y > 3) {
+            System.out.println("Coordinates should be from 1 to 3!");
+            return false;
+        }
+
+        if (this.grid.charAt(pos) != ' ') {
+            System.out.println("This cell is occupied! Choose another one!");
+            return false;
+        }
 
         StringBuilder sb = new StringBuilder(this.grid);
         sb.setCharAt(pos, 'X');
 
         this.grid = sb.toString();
+
+        this.printGrid();
+
+        return true;
     }
 
     private boolean impossibleState() {

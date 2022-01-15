@@ -9,7 +9,16 @@ public class Main {
         String input = scanner.nextLine();
         Game game = new Game(input);
         game.printGrid();
-        game.analyzeGame();
+
+        System.out.print("Enter the coordinates: ");
+        String[] coordinates = scanner.nextLine().split(" ");
+        int x = Integer.parseInt(coordinates[0]);
+        int y = Integer.parseInt(coordinates[1]);
+        game.updateGrid(x, y);
+        game.printGrid();
+
+
+        //game.analyzeGame();
 
         scanner.close();
     }

@@ -3,7 +3,7 @@ public class Game {
     private String grid;
 
     public Game(String grid) {
-        this.grid = grid;
+        this.grid = grid.replace("_", " ");
     }
 
     public void printGrid() {
@@ -34,6 +34,17 @@ public class Game {
         } else {
             System.out.println("Game not finished");
         }
+    }
+
+    public void updateGrid(int x, int y) {
+        int inputX = (x - 1) * 3;
+        int intputY = y - 1;
+        int pos = inputX + intputY;
+
+        StringBuilder sb = new StringBuilder(this.grid);
+        sb.setCharAt(pos, 'X');
+
+        this.grid = sb.toString();
     }
 
     private boolean impossibleState() {
@@ -116,6 +127,6 @@ public class Game {
     }
 
     private boolean hasEmptyCells() {
-        return this.grid.contains("_");
+        return this.grid.contains(" ");
     }
 }

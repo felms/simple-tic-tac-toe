@@ -1,9 +1,21 @@
+import java.util.Scanner;
+
 public class Game {
 
     private String grid;
+    private final Scanner scanner;
+    private char player;
+
+    public Game() {
+        this.grid = "         ";
+        player = 'X';
+        scanner = new Scanner(System.in);
+    }
 
     public Game(String grid) {
         this.grid = grid.replace("_", " ");
+        player = 'X';
+        scanner = new Scanner(System.in);
     }
 
     public void printGrid() {
@@ -21,30 +33,68 @@ public class Game {
         System.out.println("---------");
     }
 
-    public void analyzeGame() {
+    public void makeAMove(Game game) {
 
-        if (this.impossibleState()) {
-            System.out.println("Impossible");
+        int x;
+        int y ;
+        boolean updated = false;
+        do {
+            System.out.print("Enter the coordinates: ");
+
+            String[] line = this.scanner.nextLine().trim().split(" ");
+
+            if (line.length == 2) {
+
+                boolean isNumeric = line[0].matches("[+-]?\\d*(\\.\\d+)?");
+                isNumeric = isNumeric && line[1].matches("[+-]?\\d*(\\.\\d+)?");
+
+
+                if (isNumeric) {
+                    x = Integer.parseInt(line[0]);
+                    y = Integer.parseInt(line[1]);
+                    updated = game.updateGrid(x, y);
+                } else {
+                    System.out.println("You should enter numbers!");
+                }
+
+            } else {
+                System.out.println("You should enter numbers!");
+            }
+
+
+        } while(!updated);
+
+        player = player == 'X' ? 'O' : 'X';
+
+    }
+
+    // Retorna 'true' caso o jogo tenha terminado
+    // e 'false' caso ainda não.
+    public boolean gameEnded() {
+
+        if (!this.hasEmptyCells() && !this.hasThreeXs() && !this.hasThreeOs()) {
+            System.out.println("Draw");
+            return true;
         } else if (this.hasThreeXs()) {
             System.out.println("X wins");
+            return true;
         } else if (this.hasThreeOs()) {
             System.out.println("O wins");
-        } else if (!this.hasEmptyCells() && !this.hasThreeXs() && !this.hasThreeOs()) {
-            System.out.println("Draw");
-        } else {
-            System.out.println("Game not finished");
+            return true;
         }
+
+        return false;
     }
 
     // Retorna 'true' caso consiga atualizar o estado do grid
     // e 'false' caso a operação não seja bem sucedida.
-    public boolean updateGrid(int x, int y) {
+    private boolean updateGrid(int x, int y) {
         int inputX = (x - 1) * 3;
         int intputY = y - 1;
         int pos = inputX + intputY;
 
         if (x < 1 || x > 3 ||
-            y < 1 || y > 3) {
+                y < 1 || y > 3) {
             System.out.println("Coordinates should be from 1 to 3!");
             return false;
         }
@@ -55,7 +105,7 @@ public class Game {
         }
 
         StringBuilder sb = new StringBuilder(this.grid);
-        sb.setCharAt(pos, 'X');
+        sb.setCharAt(pos, player);
 
         this.grid = sb.toString();
 
@@ -64,52 +114,27 @@ public class Game {
         return true;
     }
 
-    private boolean impossibleState() {
-
-        int countX = 0;
-        int countO = 0;
-
-        for(char c : this.grid.toCharArray()) {
-            if (c == 'X') {
-                countX++;
-            } else if(c == 'O') {
-                countO++;
-            }
-        }
-        int difference = Math.abs(countO - countX);
-        
-        if(difference > 1) {
-            return true;
-        }
-
-        if(this.hasThreeXs() && this.hasThreeOs()) {
-            return true;
-        }
-
-        return false;
-    }
-
     private boolean hasThreeXs() {
 
         char[] c = this.grid.toCharArray();
 
         // Checa as linhas
-        if( (c[0] == 'X' && c[0] == c[1] && c[0] == c[2]) || 
-            (c[3] == 'X' && c[3] == c[4] && c[3] == c[5]) ||
-            (c[6] == 'X' && c[6] == c[7] && c[6] == c[8]) ){
+        if( (c[0] == 'X' && c[0] == c[1] && c[0] == c[2]) ||
+                (c[3] == 'X' && c[3] == c[4] && c[3] == c[5]) ||
+                (c[6] == 'X' && c[6] == c[7] && c[6] == c[8]) ){
             return true;
         }
 
         // Checa as colunas
-        if( (c[0] == 'X' && c[0] == c[3] && c[0] == c[6]) || 
-            (c[1] == 'X' && c[1] == c[4] && c[1] == c[7]) ||
-            (c[2] == 'X' && c[2] == c[5] && c[2] == c[8]) ){
+        if( (c[0] == 'X' && c[0] == c[3] && c[0] == c[6]) ||
+                (c[1] == 'X' && c[1] == c[4] && c[1] == c[7]) ||
+                (c[2] == 'X' && c[2] == c[5] && c[2] == c[8]) ){
             return true;
         }
 
         // Checa as diagonais
-        if( (c[0] == 'X' && c[0] == c[4] && c[0] == c[8]) || 
-            (c[2] == 'X' && c[2] == c[4] && c[2] == c[6]) ){
+        if( (c[0] == 'X' && c[0] == c[4] && c[0] == c[8]) ||
+                (c[2] == 'X' && c[2] == c[4] && c[2] == c[6]) ){
             return true;
         }
 
@@ -121,22 +146,22 @@ public class Game {
         char[] c = this.grid.toCharArray();
 
         // Checa as linhas
-        if( (c[0] == 'O' && c[0] == c[1] && c[0] == c[2]) || 
-            (c[3] == 'O' && c[3] == c[4] && c[3] == c[5]) ||
-            (c[6] == 'O' && c[6] == c[7] && c[6] == c[8]) ){
+        if( (c[0] == 'O' && c[0] == c[1] && c[0] == c[2]) ||
+                (c[3] == 'O' && c[3] == c[4] && c[3] == c[5]) ||
+                (c[6] == 'O' && c[6] == c[7] && c[6] == c[8]) ){
             return true;
         }
 
         // Checa as colunas
-        if( (c[0] == 'O' && c[0] == c[3] && c[0] == c[6]) || 
-            (c[1] == 'O' && c[1] == c[4] && c[1] == c[7]) ||
-            (c[2] == 'O' && c[2] == c[5] && c[2] == c[8]) ){
+        if( (c[0] == 'O' && c[0] == c[3] && c[0] == c[6]) ||
+                (c[1] == 'O' && c[1] == c[4] && c[1] == c[7]) ||
+                (c[2] == 'O' && c[2] == c[5] && c[2] == c[8]) ){
             return true;
         }
 
         // Checa as diagonais
-        if( (c[0] == 'O' && c[0] == c[4] && c[0] == c[8]) || 
-            (c[2] == 'O' && c[2] == c[4] && c[2] == c[6]) ){
+        if( (c[0] == 'O' && c[0] == c[4] && c[0] == c[8]) ||
+                (c[2] == 'O' && c[2] == c[4] && c[2] == c[6]) ){
             return true;
         }
 
@@ -144,6 +169,7 @@ public class Game {
     }
 
     private boolean hasEmptyCells() {
+
         return this.grid.contains(" ");
     }
 }
